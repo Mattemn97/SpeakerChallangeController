@@ -1,0 +1,19 @@
+# Configurazione Speaker Challenge
+
+B2B_TIMER_MIN=20
+B2B_TIMER_MAX=60
+B2B_FOLDER= "percorso_cartella"
+
+IMPROV_TIMER_MIN=20
+IMPROV_TIMER_MAX=40
+IMPROV_FOLDER="percorso_cartella"
+
+INTERVISTA_FILE="percorso_cartella"
+INTERVISTA_DURATION=180
+
+# Colori ANSI (standard di colorama)
+COLOR_TITLE=magenta
+COLOR_MENU=white
+COLOR_WARNING=yellow
+COLOR_SUCCESS=green
+COLOR_TIMER=cyan
