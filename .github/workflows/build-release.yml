@@ -3,7 +3,10 @@ name: Build and Release EXE
 on:
   push:
     branches:
-      - main  # o quello che preferisci
+      - main
+
+permissions:
+  contents: write  # <<< PERMETTE LA CREAZIONE DELLA RELEASE
 
 jobs:
   build:
@@ -16,18 +19,17 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'  # o la versione che usi tu
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pyinstaller
-          pip install -r requirements.txt
+          if exist requirements.txt (pip install -r requirements.txt)
 
       - name: Build EXE
         run: |
           pyinstaller --onefile main.py
-        # L’eseguibile sarà in dist/main.exe
 
       - name: Upload EXE as artifact
         uses: actions/upload-artifact@v4
