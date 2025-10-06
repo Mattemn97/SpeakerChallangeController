@@ -30,8 +30,11 @@ def load_config(file_path="config.txt"):
                     if key.startswith("COLOR_"):
                         config["COLORS"][key.replace("COLOR_", "").lower()] = COLOR_MAP.get(value.lower(), "")
 
-                    elif key.endswith("_FOLDER"):
+                    elif key.endswith("_FOLDER") or key.endswith("_FILE"):
                         config[key] = str(value)
+                    
+                    elif key.endswith("VOL_AUDIO"):
+                        config[key] = float(value)
 
                     else:
                         config[key] = int(value)

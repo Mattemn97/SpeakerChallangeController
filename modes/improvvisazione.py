@@ -8,7 +8,7 @@ def run(config):
     print(config["COLORS"]["title"] + "\n--- Modalità Improvvisazione ---")
 
     # Carica cartella dalle config
-    songs_folder = config.get("IMPROV_FOLDER", "")
+    songs_folder = config.get("IMPROV_FOLDER", "").strip().strip('"').replace("\\", "/")
     if not songs_folder or not os.path.isdir(songs_folder):
         print(config["COLORS"]["warning"] + "Cartella canzoni improvvisazione non valida in config.txt\n")
         return
@@ -23,48 +23,40 @@ def run(config):
     print(config["COLORS"]["success"] + f"Canzone selezionata: {os.path.basename(song)}")
 
     # Inizializza player
-    player = MusicPlayer()
-    player.set_volume(1.0)
-
-    # Tempo casuale per volume basso
+    total_duration = config["IMPROV_TIMER_TOT"]
     low_duration = random.randint(config["IMPROV_TIMER_MIN"], config["IMPROV_TIMER_MAX"])
-    print(config["COLORS"]["success"] + f"Volume basso per {low_duration}s")
+    high_duration = int(total_duration / 2) - int(low_duration / 2)
 
-    def improv_sequence():
-        # --- Inizio a volume massimo 10s ---
-        player.load_song(song)
-        player.play_song()
-        player.set_volume(1.0)
-        print(config["COLORS"]["success"] + f"Riproduzione iniziata: {os.path.basename(song)} (volume 100%)")
-        time.sleep(10)
+    print(config["COLORS"]["success"] + f"Timer impostato a {total_duration}s")
 
-        # --- Volume basso ---
-        player.set_volume(0.2)
-        print(config["COLORS"]["warning"] + f"Volume abbassato al 20% per {low_duration}s")
-        for sec in range(low_duration, 0, -1):
-            print(config["COLORS"]["timer"] + f"Tempo rimanente a volume basso: {sec}s", end="\r")
-            time.sleep(1)
 
-        # --- Volume massimo finale 10s ---
-        player.set_volume(1.0)
-        print(config["COLORS"]["success"] + "\nVolume massimo finale per 10s")
-        time.sleep(10)
 
-        # --- Stop ---
-        player.stop_song()
-        print(config["COLORS"]["success"] + "Riproduzione improvvisazione terminata\n")
+    # Inizializza player
+    player = MusicPlayer()
 
-    # Esegue la sequenza in un thread
-    t = threading.Thread(target=improv_sequence, daemon=True)
-    t.start()
+    # --- Prima canzone ---
+    player.load_song(song, 1)
+    player.play_song()
+    player.set_volume(config["MAX_VOL_AUDIO"])
 
-    # Comandi interattivi
-    while t.is_alive():
-        cmd = input("\nComandi: [S]top, [Q]uit → ").strip().lower()
-        if cmd == "s":
-            player.stop_song()
-            print(config["COLORS"]["warning"] + "Riproduzione fermata manualmente")
-        elif cmd == "q":
-            player.stop_song()
-            print(config["COLORS"]["success"] + "Uscita da Improvvisazione\n")
-            break
+    for sec in range(high_duration, 0, -1):
+        print(config["COLORS"]["timer"] + f"[{os.path.basename(song)}] Tempo rimanente: {sec}s al {str(config["MAX_VOL_AUDIO"] * 100)}%", end="\r")
+        time.sleep(1)
+    print("\n")
+
+    player.set_volume(config["MIN_VOL_AUDIO"])
+    for sec in range(low_duration, 0, -1):
+        print(config["COLORS"]["timer"] + f"[{os.path.basename(song)}] Tempo rimanente: {sec}s al {str(config["MIN_VOL_AUDIO"] * 100)}%", end="\r")
+        time.sleep(1)
+    print("\n")
+
+
+    player.set_volume(config["MAX_VOL_AUDIO"])
+    for sec in range(high_duration, 0, -1):
+        print(config["COLORS"]["timer"] + f"[{os.path.basename(song)}] Tempo rimanente: {sec}s al {str(config["MAX_VOL_AUDIO"] * 100)}%", end="\r")
+        time.sleep(1)
+    print("\n")
+
+    # --- Stop ---
+    player.stop_song()
+    print(config["COLORS"]["success"] + "Riproduzione improvvisazione terminata\n")
