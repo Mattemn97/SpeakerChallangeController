@@ -1,4 +1,2 @@
-redirect_stdout
 pygame
 colorama
-MusicPlayer
