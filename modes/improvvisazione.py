@@ -1,7 +1,6 @@
 import os
 import time
 import random
-import threading
 from player import MusicPlayer 
 
 def run(config):
