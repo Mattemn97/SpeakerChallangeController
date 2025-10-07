@@ -2,7 +2,7 @@ import pytest
 import tempfile
 import os
 from pathlib import Path
-from your_module_name import load_config, COLOR_MAP  # ⬅️ sostituisci con il nome reale del tuo file .py
+from utils import load_config, COLOR_MAP  # ⬅️ sostituisci con il nome reale del tuo file .py
 
 @pytest.fixture
 def config_file(tmp_path: Path):
