@@ -44,18 +44,31 @@ Pensata per utilizzo live: radio, podcast, giochi di improvvisazione, eventi o a
 ## 📁 Struttura dei file
 
 project/
+
 │
+
 ├── main.py
+
 ├── config.txt
+
 ├── news.txt
+
 │
+
 ├── back2back/
+
 │ └── *.mp3 / *.wav
+
 │
+
 ├── improvvisazione/
+
 │ └── *.mp3 / *.wav
+
 │
+
 └── intervista/
+
 └── *.mp3 / *.wav
 
 ---
