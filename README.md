@@ -1,168 +1,172 @@
 # 🎤 Speaker Challenge Terminal
 
-Benvenuto in **Speaker Challenge Terminal**, un programma da linea di comando pensato per allenarti come un vero speaker radiofonico!  
-Tre modalità — *Back2Back*, *Improvvisazione* e *Intervista* — per testare voce, ritmo e fantasia con brani casuali e timer precisi.  
-Tutto controllato da un file di configurazione personalizzabile e colorato grazie a **Colorama**.
+Applicazione Python da terminale per gestire **sfide vocali, improvvisazioni e interviste** con supporto audio, timer e colori configurabili.
+
+Pensata per utilizzo live: radio, podcast, giochi di improvvisazione, eventi o allenamenti di public speaking.
 
 ---
 
-## 🧩 Struttura del progetto
+## 🚀 Funzionalità principali
 
-📂 SpeakerChallenge/
-├── menu.py
-├── utils.py
-├── modes/
-│   ├── back2back.py
-│   ├── improvvisazione.py
-│   └── intervista.py
+- Riproduzione audio casuale da cartelle dedicate
+- Timer con countdown formattato `MM:SS`
+- Gestione automatica del volume
+- Modalità di gioco multiple
+- Estrazione casuale di news da file `.txt`
+- Output colorato e configurabile
+- Interfaccia interamente da terminale
+
+---
+
+## 🧩 Modalità disponibili
+
+### 🔁 Back2Back
+- Riproduce **due brani consecutivi**
+- Abbassa il volume a metà
+- Cambio automatico del brano
+- Countdown fino al termine
+
+### 🎭 Improvvisazione
+- Riproduce un brano casuale
+- Dopo un tempo casuale:
+  - abbassa il volume
+  - mostra una **breaking news inventata**
+- Countdown fino alla fine dell’improvvisazione
+
+### 🎙 Intervista
+- Riproduce un brano di sottofondo
+- Abbassa il volume dopo 15 secondi
+- Timer totale per la durata dell’intervista
+- Riporta il volume al massimo prima della fine
+
+---
+
+## 📁 Struttura dei file
+
+project/
+│
+├── main.py
 ├── config.txt
-└── requirements.txt
-
-- **menu.py** → entrypoint del programma: mostra il menu e gestisce la selezione delle modalità.  
-- **utils.py** → gestisce caricamento configurazione e colori.  
-- **modes/** → contiene gli script delle modalità di gioco.  
-- **config.txt** → file di configurazione per tempi, volumi, percorsi e colori.  
-
----
-
-## ⚙️ Installazione
-
-1. Assicurati di avere **Python 3.9+** installato.
-2. Clona o scarica questo repository.
-3. Installa le dipendenze:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. (Opzionale) Personalizza il file `config.txt` con i tuoi percorsi audio e preferenze.
+├── news.txt
+│
+├── back2back/
+│ └── *.mp3 / *.wav
+│
+├── improvvisazione/
+│ └── *.mp3 / *.wav
+│
+└── intervista/
+└── *.mp3 / *.wav
 
 ---
 
-## 🧠 Configurazione (`config.txt`)
+## ⚙️ Configurazione (`config.txt`)
 
-Ecco un esempio:
+Esempio:
 
-```ini
-# Configurazione Speaker Challenge
+```
+# Cartelle
+BACK2BACK_FOLDER=music/back2back
+IMPROVVISAZIONE_FOLDER=music/improvvisazione
+INTERVISTA_FOLDER=music/intervista
 
+#Timer (secondi)
+BACK2BACK_TIMER_TOT=120
+BACK2BACK_TIMER_MIN=30
+BACK2BACK_TIMER_MAX=60
+
+IMPROVVISAZIONE_TIMER_TOT=90
+IMPROVVISAZIONE_TIMER_MIN=20
+IMPROVVISAZIONE_TIMER_MAX=60
+
+INTERVISTA_TIMER_TOT=60
+
+# Volume (0.0 - 1.0)
 MAX_VOL_AUDIO=1.0
-MIN_VOL_AUDIO=0.05
+MIN_VOL_AUDIO=0.3
 
-B2B_TIMER_MIN=40
-B2B_TIMER_MAX=60
-B2B_TIMER_TOT=90
-B2B_FOLDER="C:\Users\matte\Music\Audio Libro"
-
-IMPROV_TIMER_MIN=50
-IMPROV_TIMER_MAX=60
-IMPROV_TIMER_TOT=90
-IMPROV_FOLDER="C:\Users\matte\Music\Audio Libro"
-
-INTERVISTA_FILE="percorso_cartella"
-INTERVISTA_DURATION=180
-
-# Colori ANSI (standard di colorama)
-COLOR_TITLE=magenta
-COLOR_MENU=white
+# Colori
+COLOR_MODE=cyan
+COLOR_MENU=green
 COLOR_WARNING=yellow
-COLOR_SUCCESS=green
-COLOR_TIMER=cyan
+COLOR_TIMER=magenta
+COLOR_NEWS=red
 ```
 
-### 📄 Parametri principali
 
-| Parametro | Descrizione |
-|------------|-------------|
-| `MAX_VOL_AUDIO`, `MIN_VOL_AUDIO` | Volume massimo e minimo delle tracce |
-| `B2B_TIMER_*` | Durate e tempi della modalità Back2Back |
-| `IMPROV_TIMER_*` | Durate e tempi per l’Improvvisazione |
-| `INTERVISTA_FILE`, `INTERVISTA_DURATION` | File e durata per la modalità Intervista |
-| `COLOR_*` | Colori personalizzabili per menu e messaggi |
+Tutti i messaggi di errore usano **sempre lo stesso colore** (`COLOR_WARNING`).
 
 ---
 
-## 🎮 Utilizzo
+## 📰 File `news.txt`
 
-Avvia il programma da terminale:
+Contiene titoli di news inventate, **una per riga**.
+
+Ogni news:
+- viene scelta casualmente
+- viene mostrata una sola volta
+- viene **rimossa dal file** dopo l’uso
+
+Esempio:
+```
+Scoperto un pianeta dove piove caffè
+Un robot vince un torneo di improvvisazione teatrale
+Nuova legge obbliga le sveglie a suonare più gentili
+```
+
+---
+
+## 🛠 Funzioni principali
+
+### `formatta_tempo(secondi)`
+Converte secondi in formato MM:SS
+
+### `nome_file(percorso)`
+Estrae il nome del file da un path completo.
+
+### `estrai_news_casuale(config, file_path)`
+Restituisce una news casuale e la rimuove dal file.
+
+### `MusicPlayer`
+Gestisce:
+- caricamento brani
+- play / stop
+- volume
+- inizializzazione sicura di `pygame`
+
+---
+
+## ▶️ Avvio del programma
 
 ```bash
-python menu.py
-```
+python main.py
 
-Ti troverai davanti al menu principale:
-
-```
-=== SPEAKER CHALLENGE TERMINAL ===
-[1] Modalità Back2Back
-[2] Modalità Improvvisazione
-[3] Modalità Intervista
+[1] Back2Back
+[2] Improvvisazione
+[3] Intervista
 [Q] Esci
 ```
 
-Scegli una modalità e… via col microfono!
-
----
-
-## 🔊 Modalità disponibili
-
-### 🎧 1. Back2Back
-Allenati nel passaggio tra due canzoni.  
-Le tracce si alternano automaticamente: il volume **si abbassa e rialza di colpo**, senza sfumature.  
-Tu devi gestire il parlato nel mezzo come un vero DJ da diretta!
-
-### 🎙️ 2. Improvvisazione
-Una canzone casuale parte, e tu hai un tempo limitato per improvvisare parlando sopra.  
-Puoi regolare durata e cartella musicale nel `config.txt`.
-
-### 💬 3. Intervista
-Simula un’intervista radiofonica: il programma riproduce una traccia predefinita per una durata impostata, lasciandoti spazio per domande e risposte.
-
----
-
-## 🎨 Colori e stile
-Grazie a **Colorama**, tutti i messaggi del terminale sono colorati.  
-Puoi modificare le tonalità nel file `config.txt` scegliendo tra:
-`black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `white`.
-
----
-
-## 🧰 File `utils.py`
-Gestisce caricamento configurazione e mappatura colori.  
-Ignora righe commentate (`#`), supporta valori numerici, float e stringhe.
-
-Esempio di caricamento:
-```python
-from utils import load_config
-config = load_config()
-print(config["COLORS"]["title"])
-```
-
----
-
-## 🚀 Esempio di sessione
+## 📦 Dipendenze
 ```bash
-> python menu.py
-=== SPEAKER CHALLENGE TERMINAL ===
-[1] Modalità Back2Back
-[2] Modalità Improvvisazione
-[3] Modalità Intervista
-[Q] Esci
-Seleziona una modalità: 1
-
---- Modalità Back2Back ---
-Caricamento canzoni casuali...
-Brano 1 in riproduzione 🎵
-(tempo scorre...)
-Brano 2 parte di colpo! 💥
+pip install pygame colorama
 ```
 
 ---
 
-## 🧑‍💻 Autore
-Progetto sviluppato da **Matteo Filippini**  
-Versione terminale ideata per esercizi vocali e prove di conduzione.
+## 🧠 Note di design
+
+- Nessun crash fatale: errori gestiti con messaggi leggibili
+- Tutti i warning sono uniformi e configurabili
+- Pensato per uso live, non per debug rumoroso
+- Codice modulare e facilmente estendibile
 
 ---
 
-## ☕ Licenza
-Distribuito liberamente per uso personale e didattico.  
-Se lo usi in radio… offri almeno un caffè all’autore 😉
+## 🎉 Possibili estensioni
+
+- Modalità torneo
+- Log degli speaker
+- Modalità silenziosa / verbose
+- Supporto MIDI / controller esterni
+- Randomizzazione effetti audio
