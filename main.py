@@ -38,11 +38,6 @@ def load_config(file_path="config.txt"):
                 if not line or line.startswith("#"):
                     continue
 
-                if "=" not in line:
-                    print(config["COLORS"]["warning"] +
-                          f"Riga {num} del config ignorata (formato non valido)\n")
-                    continue
-
                 key, value = line.split("=", 1)
                 key, value = key.strip(), value.strip()
 
@@ -51,19 +46,21 @@ def load_config(file_path="config.txt"):
                         config["COLORS"][key.replace("COLOR_", "").lower()] = COLOR_MAP.get(value.lower(), "")
                     elif key.endswith("VOL_AUDIO"):
                         config[key] = float(value)
+                    elif key.endswith("FOLDER"):
+                        config[key] = str(value.strip().strip('"').replace("\\", "/"))
                     else:
                         config[key] = int(value)
 
                 except ValueError:
-                    print(config["COLORS"]["warning"] +
+                    print(COLOR_MAP.get("red") +
                           f"Valore non valido nel config alla riga {num}\n")
 
     except FileNotFoundError:
-        print(config["COLORS"]["warning"] +
+        print(COLOR_MAP.get("red") +
               "File config.txt non trovato\n")
 
     except PermissionError:
-        print(config["COLORS"]["warning"] +
+        print(COLOR_MAP.get("red") +
               "Permessi insufficienti per leggere config.txt\n")
 
     return config
@@ -124,6 +121,10 @@ class MusicPlayer:
             print(self.config["COLORS"]["warning"] +
                   "Errore durante la riproduzione audio\n")
 
+    def set_volume(self, volume: float):
+        volume = max(0.0, min(1.0, volume))  # limita tra 0 e 1
+        pygame.mixer.music.set_volume(volume)
+
     def stop_song(self):
         pygame.mixer.music.stop()
 
@@ -150,7 +151,7 @@ def run_intervista(config):
     song = random.choice(songs)
     print(config["COLORS"]["menu"] + f"CANZONE RIPRODOTTA: {nome_file(song)}")
 
-    player = MusicPlayer()
+    player = MusicPlayer(config)
     player.load_song(song)
     player.play_song()
     player.set_volume(config["MAX_VOL_AUDIO"])
@@ -160,6 +161,7 @@ def run_intervista(config):
         time.sleep(1)
 
     player.set_volume(config["MIN_VOL_AUDIO"])
+    print(" ")
 
     for sec in range(duration, 0, -1):
         print(config["COLORS"]["timer"] + f"AL TERMINE DELL' INTERVISTA: {formatta_tempo(sec)}", end="\r")
@@ -198,7 +200,7 @@ def run_improvvisazione(config):
     song = random.choice(songs)
     print(config["COLORS"]["menu"] + f"CANZONE RIPRODOTTA: {nome_file(song)}")
 
-    player = MusicPlayer()
+    player = MusicPlayer(config)
     player.load_song(song)
     player.play_song()
 
@@ -209,6 +211,7 @@ def run_improvvisazione(config):
         time.sleep(1)
     
     player.set_volume(config["MIN_VOL_AUDIO"])
+    print(" ")
 
     for sec in range(duration, 0, -1):
         if sec == sec_news:
@@ -245,11 +248,11 @@ def run_back2back(config):
     print(config["COLORS"]["menu"] + f"CANZONE SUCCESSIVA: {nome_file(song2)}")
 
     total = config["BACK2BACK_TIMER_TOT"]
-    duration = random.randint(config["BACK2BACK_TIMER_MIN"], config["BACK2BACK_TIMER_MAX"])
+    duration = random.randint(config["BACK2BACK_TIMER_LOW_MIN"], config["BACK2BACK_TIMER_LOW_MAX"])
     half = duration // 2
     max_audio = (total // 2) - half
 
-    player = MusicPlayer()
+    player = MusicPlayer(config)
     player.load_song(song1)
     player.play_song()
     player.set_volume(config["MAX_VOL_AUDIO"])
@@ -259,12 +262,14 @@ def run_back2back(config):
         time.sleep(1)
 
     player.set_volume(config["MIN_VOL_AUDIO"])
+    print(" ")
     for sec in range(half, 0, -1):
         print(config["COLORS"]["timer"] + f"AL CAMBIO BRANO: {formatta_tempo(sec)}", end="\r")
         time.sleep(1)
 
     player.load_song(song2)
     player.play_song()
+    print(" ")
 
     for sec in range(half, 0, -1):
         print(config["COLORS"]["timer"] + f"AL TERMINE DEL BACK_2_BACK: {formatta_tempo(sec)}", end="\r")
