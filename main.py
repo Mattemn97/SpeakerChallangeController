@@ -169,9 +169,10 @@ def run_intervista(config):
     
     player.set_volume(config["MAX_VOL_AUDIO"])
 
-    for sec in range(5, 0, -1):
+    for sec in range(10, 0, -1):
         time.sleep(1)
-
+    print(" ")
+    
     player.stop_song()
     print("\n" + config["COLORS"]["mode"] + "Intervista terminata\n")
 
@@ -222,8 +223,9 @@ def run_improvvisazione(config):
     
     player.set_volume(config["MAX_VOL_AUDIO"])
 
-    for sec in range(5, 0, -1):
+    for sec in range(10, 0, -1):
         time.sleep(1)
+    print(" ")
 
     player.stop_song()
     print("\n" + config["COLORS"]["mode"] + "Improvvisazione terminata\n")
@@ -276,8 +278,9 @@ def run_back2back(config):
         time.sleep(1)
 
     player.set_volume(config["MAX_VOL_AUDIO"])
-    for sec in range(5, 0, -1):
+    for sec in range(10, 0, -1):
         time.sleep(1)
+    print(" ")
 
     player.stop_song()
     print(config["COLORS"]["mode"] + "Back2Back terminato\n")
