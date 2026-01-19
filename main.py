@@ -25,7 +25,7 @@ def formatta_tempo(secondi: int):
     return f"{minuti:02d}:{secondi_restanti:02d}"
 
 def nome_file(percorso: str):
-    return os.path.basename(percorso)
+    return os.path.basename(percorso).replace(".mp3", "")
 
 def load_config(file_path="config.txt"):
     config = {"COLORS": {}}
@@ -46,7 +46,7 @@ def load_config(file_path="config.txt"):
                         config["COLORS"][key.replace("COLOR_", "").lower()] = COLOR_MAP.get(value.lower(), "")
                     elif key.endswith("VOL_AUDIO"):
                         config[key] = float(value)
-                    elif key.endswith("FOLDER"):
+                    elif key.endswith("FOLDER") or key.endswith("PATH"):
                         config[key] = str(value.strip().strip('"').replace("\\", "/"))
                     else:
                         config[key] = int(value)
@@ -149,7 +149,7 @@ def run_intervista(config):
     duration = config.get("INTERVISTA_TIMER_TOT", 30)
 
     song = random.choice(songs)
-    print(config["COLORS"]["menu"] + f"CANZONE RIPRODOTTA: {nome_file(song)}")
+    print(config["COLORS"]["canzone"] + f"CANZONE RIPRODOTTA: {nome_file(song)}")
 
     player = MusicPlayer(config)
     player.load_song(song)
@@ -157,22 +157,21 @@ def run_intervista(config):
     player.set_volume(config["MAX_VOL_AUDIO"])
 
     for sec in range(15, 0, -1):
-        print(config["COLORS"]["timer"] + f"ALLA DIMINUZIONE DI VOLUME:  {formatta_tempo(sec)}", end="\r")
+        print(config["COLORS"]["inizio"] + f"INIZIO PROVA:  {formatta_tempo(sec)}", end="\r")
         time.sleep(1)
 
     player.set_volume(config["MIN_VOL_AUDIO"])
     print(" ")
 
     for sec in range(duration, 0, -1):
-        print(config["COLORS"]["timer"] + f"AL TERMINE DELL' INTERVISTA: {formatta_tempo(sec)}", end="\r")
+        print(config["COLORS"]["termine"] + f"TERMINE PROVA: {formatta_tempo(sec)}", end="\r")
         time.sleep(1)
     
     player.set_volume(config["MAX_VOL_AUDIO"])
+    player.load_song(config["GONG_PATH"])
+    player.play_song()
+    time.sleep(5)
 
-    for sec in range(10, 0, -1):
-        time.sleep(1)
-    print(" ")
-    
     player.stop_song()
     print("\n" + config["COLORS"]["mode"] + "Intervista terminata\n")
 
@@ -199,7 +198,7 @@ def run_improvvisazione(config):
     sec_news = random.randint(config["IMPROVVISAZIONE_TIMER_MIN"], config["IMPROVVISAZIONE_TIMER_MAX"])
 
     song = random.choice(songs)
-    print(config["COLORS"]["menu"] + f"CANZONE RIPRODOTTA: {nome_file(song)}")
+    print(config["COLORS"]["canzone"] + f"CANZONE RIPRODOTTA: {nome_file(song)}")
 
     player = MusicPlayer(config)
     player.load_song(song)
@@ -208,24 +207,29 @@ def run_improvvisazione(config):
     player.set_volume(config["MAX_VOL_AUDIO"])
 
     for sec in range(15, 0, -1):
-        print(config["COLORS"]["timer"] + f"ALLA DIMINUZIONE DI VOLUME:  {formatta_tempo(sec)}", end="\r")
-        time.sleep(1)
+        if sec == 0:
+            print(" "*50, end="\r")
+            time.sleep(0.1)
+        else:
+            print(config["COLORS"]["inizio"] + f"INIZIO PROVA: {formatta_tempo(sec)}", end="\r")
+            time.sleep(1)
     
     player.set_volume(config["MIN_VOL_AUDIO"])
-    print(" ")
 
-    for sec in range(duration, 0, -1):
-        if sec == sec_news:
-            print(config["COLORS"]["news"] + f"BREAKING NEWS: {estrai_news_casuale()}")
+    for sec in range(duration, -1, -1):
+        if sec == 0:
+            print(" "*50, end="\r")
+            time.sleep(0.1)
+        elif sec == sec_news:
+            print(config["COLORS"]["news"] + f"BREAKING NEWS: {estrai_news_casuale(config)}")
         else:
-            print(config["COLORS"]["timer"] + f"AL TERMINE DELL' IMPROVVISAZIONE: {formatta_tempo(sec)}", end="\r")
+            print(config["COLORS"]["termine"] + f"TERMINE PROVA: {formatta_tempo(sec)}", end="\r")
             time.sleep(1)
     
     player.set_volume(config["MAX_VOL_AUDIO"])
-
-    for sec in range(10, 0, -1):
-        time.sleep(1)
-    print(" ")
+    player.load_song(config["GONG_PATH"])
+    player.play_song()
+    time.sleep(5)
 
     player.stop_song()
     print("\n" + config["COLORS"]["mode"] + "Improvvisazione terminata\n")
@@ -246,8 +250,8 @@ def run_back2back(config):
              if f.lower().endswith((".mp3", ".wav"))]
 
     song1, song2 = random.sample(songs, 2)
-    print(config["COLORS"]["menu"] + f"CANZONE ATTUALE: {nome_file(song1)}")
-    print(config["COLORS"]["menu"] + f"CANZONE SUCCESSIVA: {nome_file(song2)}")
+    print(config["COLORS"]["canzone"] + f"CANZONE ATTUALE: {nome_file(song1)}")
+    print(config["COLORS"]["canzone"] + f"CANZONE SUCCESSIVA: {nome_file(song2)}")
 
     total = config["BACK2BACK_TIMER_TOT"]
     duration = random.randint(config["BACK2BACK_TIMER_LOW_MIN"], config["BACK2BACK_TIMER_LOW_MAX"])
@@ -259,28 +263,38 @@ def run_back2back(config):
     player.play_song()
     player.set_volume(config["MAX_VOL_AUDIO"])
 
-    for sec in range(max_audio, 0, -1):
-        print(config["COLORS"]["timer"] + f"ALLA DIMINUZIONE DI VOLUME:  {formatta_tempo(sec)}", end="\r")
-        time.sleep(1)
+    for sec in range(max_audio, -1, -1):
+        if sec == 0:
+            print(" "*50, end="\r")
+            time.sleep(0.1)
+        else:
+            print(config["COLORS"]["inizio"] + f"INIZIO PROVA: {formatta_tempo(sec)}", end="\r")
+            time.sleep(1)
 
     player.set_volume(config["MIN_VOL_AUDIO"])
-    print(" ")
-    for sec in range(half, 0, -1):
-        print(config["COLORS"]["timer"] + f"AL CAMBIO BRANO: {formatta_tempo(sec)}", end="\r")
-        time.sleep(1)
+    for sec in range(half, -1, -1):
+        if sec == 0:
+            print(" "*50, end="\r")
+            time.sleep(0.1)
+        else:
+            print(config["COLORS"]["cambio"] + f"CAMBIO BRANO: {formatta_tempo(sec)}", end="\r")
+            time.sleep(1)
 
     player.load_song(song2)
     player.play_song()
-    print(" ")
 
-    for sec in range(half, 0, -1):
-        print(config["COLORS"]["timer"] + f"AL TERMINE DEL BACK_2_BACK: {formatta_tempo(sec)}", end="\r")
-        time.sleep(1)
-
+    for sec in range(half, -1, -1):
+        if sec == 0:
+            print(" "*50, end="\r")
+            time.sleep(0.1)
+        else:
+            print(config["COLORS"]["termine"] + f"TERMINE PROVA: {formatta_tempo(sec)}", end="\r")
+            time.sleep(1)
+    
     player.set_volume(config["MAX_VOL_AUDIO"])
-    for sec in range(10, 0, -1):
-        time.sleep(1)
-    print(" ")
+    player.load_song(config["GONG_PATH"])
+    player.play_song()
+    time.sleep(5)
 
     player.stop_song()
     print(config["COLORS"]["mode"] + "Back2Back terminato\n")
