@@ -45,7 +45,6 @@ def formatta_tempo(secondi: int) -> str:
     secondi_restanti = secondi % 60
     return f"{minuti:02d}:{secondi_restanti:02d}"
 
-
 def nome_file(percorso: str) -> str:
     """
     Estrae il nome del file dal percorso, rimuovendo l'estensione .mp3.
@@ -57,7 +56,6 @@ def nome_file(percorso: str) -> str:
         str: Nome del file senza estensione.
     """
     return os.path.basename(percorso).replace(".mp3", "")
-
 
 def clear_screen() -> None:
     """
@@ -297,7 +295,6 @@ def fade_out(player: MusicPlayer, config: dict) -> None:
     """
     player.fade_volume(config["MAX_VOL_AUDIO"], config["MIN_VOL_AUDIO"], 1.0)
 
-
 def fade_in(player: MusicPlayer, config: dict) -> None:
     """
     Aumenta il volume al massimo in un secondo (fade in).
@@ -307,7 +304,6 @@ def fade_in(player: MusicPlayer, config: dict) -> None:
         config (dict): Dizionario di configurazione.
     """
     player.fade_volume(config["MIN_VOL_AUDIO"], config["MAX_VOL_AUDIO"], 1.0)
-
 
 def play_gong(player: MusicPlayer, config: dict) -> None:
     """
@@ -717,7 +713,6 @@ def run_articolo(config: dict) -> None:
     player.stop_song()
     print("\n" + config["COLORS"]["mode"] + "Esposizione articolo terminata\n")
 
-
 def main_menu() -> None:
     """
     Mostra il menu principale e gestisce le scelte dell'utente.
@@ -754,7 +749,6 @@ def main_menu() -> None:
             print(
                 CONFIG["COLORS"]["warning"] + "Scelta non valida\n"
             )
-
 
 if __name__ == "__main__":
     main_menu()
