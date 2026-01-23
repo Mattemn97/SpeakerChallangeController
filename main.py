@@ -1,3 +1,4 @@
+from logging import config
 import os
 import time
 import random
@@ -128,12 +129,41 @@ class MusicPlayer:
         volume = max(0.0, min(1.0, volume))  # limita tra 0 e 1
         pygame.mixer.music.set_volume(volume)
 
+    def fade_volume(self, start_volume: float, end_volume: float, duration: float = 1.0):
+        start_volume = max(0.0, min(1.0, start_volume))
+        end_volume = max(0.0, min(1.0, end_volume))
+        
+        start_time = time.time()
+        
+        while True:
+            elapsed = time.time() - start_time
+            
+            if elapsed >= duration:
+                pygame.mixer.music.set_volume(end_volume)
+                break
+            
+            # Interpolazione lineare
+            progress = elapsed / duration
+            current_volume = start_volume + (end_volume - start_volume) * progress
+            pygame.mixer.music.set_volume(current_volume)
+            
+            time.sleep(0.01)  # Aggiorna ogni 10ms per smoothness
+    
     def stop_song(self):
         pygame.mixer.music.stop()
 
-# ==================================================
-# MODALITÀ INTERVISTA
-# ==================================================
+def fade_out(player, config):
+        player.fade_volume(config["MAX_VOL_AUDIO"], config["MIN_VOL_AUDIO"], 1.0)
+
+def fade_in(player, config):
+        player.fade_volume(config["MIN_VOL_AUDIO"], config["MAX_VOL_AUDIO"], 1.0)
+
+def play_gong(player, config):
+    player.set_volume(config["MAX_VOL_AUDIO"])
+    player.load_song(config["GONG_PATH"])
+    player.play_song()
+    time.sleep(5)
+
 def run_intervista(config):
     clear_screen()
     print(config["COLORS"]["mode"] + "\n--- Modalità Intervista ---")
@@ -158,31 +188,26 @@ def run_intervista(config):
     player = MusicPlayer(config)
     player.load_song(song)
     player.play_song()
-    player.set_volume(config["MAX_VOL_AUDIO"])
+    fade_in(player, config)
 
     for sec in range(15, 0, -1):
         print(config["COLORS"]["inizio"] + f"INIZIO PROVA:  {formatta_tempo(sec)}", end="\r")
         time.sleep(1)
 
-    player.set_volume(config["MIN_VOL_AUDIO"])
+    fade_out(player, config)
     print(" ")
 
     for sec in range(duration, 0, -1):
         print(config["COLORS"]["termine"] + f"TERMINE PROVA: {formatta_tempo(sec)}", end="\r")
         time.sleep(1)
-    
-    player.set_volume(config["MAX_VOL_AUDIO"])
-    player.load_song(config["GONG_PATH"])
-    player.play_song()
-    time.sleep(5)
+
+    fade_out(player, config)
+
+    play_gong(player, config)
 
     player.stop_song()
     print("\n" + config["COLORS"]["mode"] + "Intervista terminata\n")
 
-
-# ==================================================
-# MODALITÀ IMPROVVISAZIONE
-# ==================================================
 def run_improvvisazione(config):
     clear_screen()
     print(config["COLORS"]["mode"] + "\n--- Modalità Improvvisazione ---")
@@ -208,8 +233,7 @@ def run_improvvisazione(config):
     player = MusicPlayer(config)
     player.load_song(song)
     player.play_song()
-
-    player.set_volume(config["MAX_VOL_AUDIO"])
+    fade_in(player, config)
 
     for sec in range(15, 0, -1):
         if sec == 0:
@@ -218,8 +242,8 @@ def run_improvvisazione(config):
         else:
             print(config["COLORS"]["inizio"] + f"INIZIO PROVA: {formatta_tempo(sec)}", end="\r")
             time.sleep(1)
-    
-    player.set_volume(config["MIN_VOL_AUDIO"])
+
+    fade_out(player, config)
 
     for sec in range(duration, -1, -1):
         if sec == 0:
@@ -230,19 +254,14 @@ def run_improvvisazione(config):
         else:
             print(config["COLORS"]["termine"] + f"TERMINE PROVA: {formatta_tempo(sec)}", end="\r")
             time.sleep(1)
-    
-    player.set_volume(config["MAX_VOL_AUDIO"])
-    player.load_song(config["GONG_PATH"])
-    player.play_song()
-    time.sleep(5)
+
+    fade_out(player, config)
+
+    play_gong(player, config)
 
     player.stop_song()
     print("\n" + config["COLORS"]["mode"] + "Improvvisazione terminata\n")
 
-
-# ==================================================
-# MODALITÀ BACK2BACK
-# ==================================================
 def run_back2back(config):
     clear_screen()
     print(config["COLORS"]["mode"] + "\n--- Modalità Back2Back ---")
@@ -267,7 +286,7 @@ def run_back2back(config):
     player = MusicPlayer(config)
     player.load_song(song1)
     player.play_song()
-    player.set_volume(config["MAX_VOL_AUDIO"])
+    fade_in(player, config)
 
     for sec in range(max_audio, -1, -1):
         if sec == 0:
@@ -277,7 +296,7 @@ def run_back2back(config):
             print(config["COLORS"]["inizio"] + f"INIZIO PROVA: {formatta_tempo(sec)}", end="\r")
             time.sleep(1)
 
-    player.set_volume(config["MIN_VOL_AUDIO"])
+    fade_out(player, config)
     for sec in range(half, -1, -1):
         if sec == 0:
             print(" "*50, end="\r")
@@ -297,14 +316,12 @@ def run_back2back(config):
             print(config["COLORS"]["termine"] + f"TERMINE PROVA: {formatta_tempo(sec)}", end="\r")
             time.sleep(1)
     
-    player.set_volume(config["MAX_VOL_AUDIO"])
-    player.load_song(config["GONG_PATH"])
-    player.play_song()
-    time.sleep(5)
+    fade_out(player, config)
+      
+    play_gong(player, config)
 
     player.stop_song()
     print(config["COLORS"]["mode"] + "Back2Back terminato\n")
-
 
 CONFIG = load_config()
 
