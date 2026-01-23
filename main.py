@@ -27,6 +27,9 @@ def formatta_tempo(secondi: int):
 def nome_file(percorso: str):
     return os.path.basename(percorso).replace(".mp3", "")
 
+def clear_screen():
+    os.system("cls" if os.name == "nt" else "clear")
+
 def load_config(file_path="config.txt"):
     config = {"COLORS": {}}
 
@@ -132,6 +135,7 @@ class MusicPlayer:
 # MODALITÀ INTERVISTA
 # ==================================================
 def run_intervista(config):
+    clear_screen()
     print(config["COLORS"]["mode"] + "\n--- Modalità Intervista ---")
 
     folder = config.get("INTERVISTA_FOLDER", "").strip().strip('"').replace("\\", "/")
@@ -180,6 +184,7 @@ def run_intervista(config):
 # MODALITÀ IMPROVVISAZIONE
 # ==================================================
 def run_improvvisazione(config):
+    clear_screen()
     print(config["COLORS"]["mode"] + "\n--- Modalità Improvvisazione ---")
 
     folder = config.get("IMPROVVISAZIONE_FOLDER", "").strip().strip('"').replace("\\", "/")
@@ -239,6 +244,7 @@ def run_improvvisazione(config):
 # MODALITÀ BACK2BACK
 # ==================================================
 def run_back2back(config):
+    clear_screen()
     print(config["COLORS"]["mode"] + "\n--- Modalità Back2Back ---")
 
     folder = config.get("BACK2BACK_FOLDER", "").strip().strip('"').replace("\\", "/")
