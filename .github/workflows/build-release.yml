@@ -53,11 +53,16 @@ jobs:
         run: |
           pyinstaller --onefile main.py
 
+      - name: Copy support files
+        run: |
+          Copy-Item -Path news.txt -Destination dist/
+          Copy-Item -Path config.txt -Destination dist/
+
       - name: Upload EXE as artifact
         uses: actions/upload-artifact@v4
         with:
           name: my_executable
-          path: dist/main.exe
+          path: dist/
 
   release:
     name: Create Release
@@ -75,6 +80,9 @@ jobs:
         with:
           tag_name: v${{ github.run_number }}
           name: "Release ${{ github.run_number }}"
-          files: ./dist/main.exe
+          files: |
+            ./dist/main.exe
+            ./dist/news.txt
+            ./dist/config.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
