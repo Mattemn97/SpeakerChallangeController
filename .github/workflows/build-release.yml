@@ -64,17 +64,30 @@ jobs:
     runs-on: ubuntu-latest
     needs: build  # ⬅️ solo dopo build
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: my_executable
           path: ./dist
 
+      - name: Copy config files
+        run: |
+          cp config.txt dist/
+          cp news.txt dist/
+
+      - name: Create ZIP file
+        run: |
+          cd dist
+          zip -r SpeakerChallangeController-Release.zip main.exe config.txt news.txt
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ github.run_number }}
           name: "Release ${{ github.run_number }}"
-          files: ./dist/main.exe
+          files: ./dist/SpeakerChallangeController-Release.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
