@@ -22,7 +22,7 @@
 
 /* Limita la larghezza dei pannelli su schermi molto grandi per migliorare la leggibilità */
 .display-panel {
-    max-width: 800px;
+    max-width: 1600px;
     margin: 0 auto;
 }
 
