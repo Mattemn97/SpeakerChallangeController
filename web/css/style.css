@@ -1,0 +1,45 @@
+/* css/style.css */
+
+/* Stile per i numeri del timer, resi molto grandi per essere letti a distanza */
+.timer-display {
+    font-size: 6rem; /* Equivalente a ~96px */
+    font-family: "Courier New", Courier, monospace; /* Font monospazio per evitare sfarfallii nei numeri */
+    font-weight: bold;
+    color: #333;
+    margin: 20px 0;
+    transition: color 0.3s ease; /* Transizione morbida se cambiamo colore (es. ultimi secondi in rosso) */
+}
+
+/* Colore di avviso per gli ultimi secondi del countdown */
+.timer-warning {
+    color: #f44336; /* W3 Red */
+}
+
+/* Colore per il countdown preparatorio iniziale */
+.timer-prep {
+    color: #ff9800; /* W3 Orange */
+}
+
+/* Limita la larghezza dei pannelli su schermi molto grandi per migliorare la leggibilità */
+.display-panel {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Classe di utilità per nascondere elementi (usata per far apparire/scomparire le news) */
+.hidden {
+    display: none !important;
+}
+
+/* Effetto di pulsazione per le Breaking News */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+    100% { transform: scale(1); }
+}
+
+#newsDisplay:not(.hidden) {
+    animation: pulse 2s infinite;
+    margin-top: 20px;
+    border-radius: 8px;
+}

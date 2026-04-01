@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speaker Challenge Controller</title>
+    
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="w3-light-grey">
+
+    <div class="w3-bar w3-black">
+        <button class="w3-bar-item w3-button tablink"><h1>Speaker Challenge</h1></button>        
+        <button class="w3-bar-item w3-button tablink" onclick="openTab(event, 'Impostazioni')"><h1>Impostazioni</h1></button>        
+        <button class="w3-bar-item w3-button tablink" onclick="openTab(event, 'Articolo')"><h1>Articolo</h1></button>
+        <button class="w3-bar-item w3-button tablink" onclick="openTab(event, 'Back2Back')"><h1>Back2Back</h1></button>
+        <button class="w3-bar-item w3-button tablink" onclick="openTab(event, 'Improvvisazione')"><h1>Improvvisazione</h1></button>
+        <button class="w3-bar-item w3-button tablink" onclick="openTab(event, 'Intervista')"><h1>Intervista</h1></button>
+    </div>
+
+    <div id="Impostazioni" class="w3-container w3-padding-24 tab-content">
+        <div class="w3-card-4 w3-white w3-padding">
+            <h2>Impostazioni</h2>
+            <p>Carica i brani per ogni modalità e imposta i tempi (in secondi).</p>
+
+            <form id="configForm" onsubmit="event.preventDefault(); alert('Impostazioni salvate nel browser!');">
+                
+                <div class="w3-section w3-border-bottom w3-padding-8">
+                    <h3>Intervista</h3>
+                    <label>Brani Musicali:</label>
+                    <input type="file" id="fileIntervista" class="w3-input w3-border" multiple accept="audio/*">
+                    <label class="w3-margin-top">Durata Totale (sec):</label>
+                    <input type="number" id="timeIntervista" class="w3-input w3-border" value="30" min="10">
+                </div>
+
+                <div class="w3-section w3-border-bottom w3-padding-8">
+                    <h3>Improvvisazione</h3>
+                    <label>Brani Musicali:</label>
+                    <input type="file" id="fileImprovvisazione" class="w3-input w3-border" multiple accept="audio/*">
+                    <label class="w3-margin-top">Durata Totale (sec):</label>
+                    <input type="number" id="timeImprovvisazione" class="w3-input w3-border" value="60" min="20">
+                    <label class="w3-margin-top">News (una per riga):</label>
+                    <textarea id="newsTextarea" class="w3-input w3-border" rows="4"></textarea>
+                </div>
+
+                <div class="w3-section w3-border-bottom w3-padding-8">
+                    <h3>Back2Back</h3>
+                    <label>Brani Musicali (minimo 2):</label>
+                    <input type="file" id="fileBack2Back" class="w3-input w3-border" multiple accept="audio/*">
+                    <label class="w3-margin-top">Durata Totale (sec):</label>
+                    <input type="number" id="timeBack2Back" class="w3-input w3-border" value="60" min="20">
+                </div>
+
+                <div class="w3-section w3-border-bottom w3-padding-8">
+                    <h3>Articolo</h3>
+                    <label>Brani Musicali:</label>
+                    <input type="file" id="fileArticolo" class="w3-input w3-border" multiple accept="audio/*">
+                    <label class="w3-margin-top">Durata Massima (sec):</label>
+                    <input type="number" id="timeArticolo" class="w3-input w3-border" value="45" min="10">
+                </div>
+
+                <button type="submit" class="w3-button w3-blue w3-margin-top">Salva Impostazioni</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="Intervista" class="w3-container w3-padding-24 tab-content" style="display:none">
+        <div class="w3-card-4 w3-white w3-center w3-padding-32 display-panel">
+            <h2>Modalità Intervista</h2>
+            <div class="timer-display" id="timerIntervista">00:00</div>
+            <p id="trackIntervista" class="w3-text-grey">Nessun brano in riproduzione</p>
+            <button class="w3-button w3-green w3-xlarge w3-margin-top" onclick="startIntervista()">▶ Avvia Prova</button>
+            <button class="w3-button w3-red w3-xlarge w3-margin-top" onclick="stopAll()">⏹ Interrompi</button>
+        </div>
+    </div>
+
+    <div id="Improvvisazione" class="w3-container w3-padding-24 tab-content" style="display:none">
+        <div class="w3-card-4 w3-white w3-center w3-padding-32 display-panel">
+            <h2>Modalità Improvvisazione</h2>
+            <div class="timer-display" id="timerImprovvisazione">00:00</div>
+            <div id="newsDisplay" class="w3-panel w3-yellow w3-display-container hidden">
+                <h3>BREAKING NEWS</h3>
+                <p id="newsContent" class="w3-large w3-bold"></p>
+            </div>
+            <p id="trackImprovvisazione" class="w3-text-grey">Nessun brano in riproduzione</p>
+            <button class="w3-button w3-green w3-xlarge w3-margin-top" onclick="startImprovvisazione()">▶ Avvia Prova</button>
+            <button class="w3-button w3-red w3-xlarge w3-margin-top" onclick="stopAll()">⏹ Interrompi</button>
+        </div>
+    </div>
+
+    <div id="Back2Back" class="w3-container w3-padding-24 tab-content" style="display:none">
+        <div class="w3-card-4 w3-white w3-center w3-padding-32 display-panel">
+            <h2>Modalità Back2Back</h2>
+            <div class="timer-display" id="timerBack2Back">00:00</div>
+            <p id="trackBack2Back" class="w3-text-grey">Nessun brano in riproduzione</p>
+            <p id="trackNextBack2Back" class="w3-text-blue">Prossimo brano: ---</p>
+            <button class="w3-button w3-green w3-xlarge w3-margin-top" onclick="startBack2Back()">▶ Avvia Prova</button>
+            <button class="w3-button w3-red w3-xlarge w3-margin-top" onclick="stopAll()">⏹ Interrompi</button>
+        </div>
+    </div>
+
+    <div id="Articolo" class="w3-container w3-padding-24 tab-content" style="display:none">
+        <div class="w3-card-4 w3-white w3-center w3-padding-32 display-panel">
+            <h2>Modalità Articolo</h2>
+            <div class="timer-display" id="timerArticolo">00:00</div>
+            <p id="trackArticolo" class="w3-text-grey">Nessun brano in riproduzione</p>
+            <button class="w3-button w3-green w3-xlarge w3-margin-top" onclick="startArticolo()">▶ Avvia Prova</button>
+            <button class="w3-button w3-red w3-xlarge w3-margin-top" onclick="stopAll()">⏹ Interrompi</button>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/modes.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
+</html>
