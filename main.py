@@ -8,9 +8,6 @@ Funzionalità principali:
 - Interfaccia CLI avanzata tramite libreria 'rich'.
 - Architettura disaccoppiata (Business Logic / Presentation Layer).
 - Logging strutturato delle operazioni.
-
-Autore: Speaker Challenge
-Data: 2026
 """
 
 import time
